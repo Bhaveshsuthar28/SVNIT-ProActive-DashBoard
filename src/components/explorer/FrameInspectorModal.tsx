@@ -14,26 +14,47 @@ const CLASS_BADGE_STYLES: Record<string, { bg: string; text: string; dot: string
     text: 'text-blue-900 dark:text-blue-200 font-bold',
     dot: 'bg-[#1677FF]',
   },
-  TRUCK: {
-    bg: 'bg-rose-50 dark:bg-rose-950/70 border-rose-300 dark:border-rose-700',
-    text: 'text-rose-900 dark:text-rose-200 font-bold',
-    dot: 'bg-[#FF4D5A]',
-  },
   BUS: {
     bg: 'bg-emerald-50 dark:bg-emerald-950/70 border-emerald-300 dark:border-emerald-700',
     text: 'text-emerald-900 dark:text-emerald-200 font-bold',
     dot: 'bg-[#18B979]',
   },
-  MOTORCYCLE: {
+  THREE_WHEELER: {
     bg: 'bg-amber-50 dark:bg-amber-950/70 border-amber-300 dark:border-amber-700',
     text: 'text-amber-900 dark:text-amber-200 font-bold',
     dot: 'bg-[#F79009]',
   },
-  OTHER: {
+  TWO_WHEELER: {
     bg: 'bg-purple-50 dark:bg-purple-950/70 border-purple-300 dark:border-purple-700',
     text: 'text-purple-900 dark:text-purple-200 font-bold',
     dot: 'bg-[#7A5AF8]',
   },
+  HCV: {
+    bg: 'bg-rose-50 dark:bg-rose-950/70 border-rose-300 dark:border-rose-700',
+    text: 'text-rose-900 dark:text-rose-200 font-bold',
+    dot: 'bg-[#FF4D5A]',
+  },
+  LCV: {
+    bg: 'bg-cyan-50 dark:bg-cyan-950/70 border-cyan-300 dark:border-cyan-700',
+    text: 'text-cyan-900 dark:text-cyan-200 font-bold',
+    dot: 'bg-[#06AED4]',
+  },
+  PEDESTRIAN: {
+    bg: 'bg-pink-50 dark:bg-pink-950/70 border-pink-300 dark:border-pink-700',
+    text: 'text-pink-900 dark:text-pink-200 font-bold',
+    dot: 'bg-[#EC4899]',
+  },
+};
+
+const getVehicleBadgeStyle = (cls: string) => {
+  const norm = (cls || '').toUpperCase().replace(/[\s\-_]/g, '');
+  if (norm.includes('THREE')) return CLASS_BADGE_STYLES.THREE_WHEELER;
+  if (norm.includes('TWO') || norm.includes('BIKE') || norm.includes('MOTORCYCLE')) return CLASS_BADGE_STYLES.TWO_WHEELER;
+  if (norm.includes('HCV') || norm.includes('TRUCK')) return CLASS_BADGE_STYLES.HCV;
+  if (norm.includes('LCV') || norm.includes('VAN')) return CLASS_BADGE_STYLES.LCV;
+  if (norm.includes('PEDESTRIAN') || norm.includes('PERSON')) return CLASS_BADGE_STYLES.PEDESTRIAN;
+  if (norm.includes('BUS')) return CLASS_BADGE_STYLES.BUS;
+  return CLASS_BADGE_STYLES.CAR;
 };
 
 // Global frame image cache to ensure instant loading of previously captured frames
@@ -154,8 +175,7 @@ export const FrameInspectorModal: React.FC<FrameInspectorModalProps> = ({
 
   const mins = Math.floor(point.timeSec / 60);
   const secs = (point.timeSec % 60).toFixed(2).padStart(5, '0');
-  const upperClass = point.vehicleClass.toUpperCase();
-  const badge = CLASS_BADGE_STYLES[upperClass] || CLASS_BADGE_STYLES.OTHER;
+  const badge = getVehicleBadgeStyle(point.vehicleClass);
 
   return (
     <>

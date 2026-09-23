@@ -1,7 +1,15 @@
 import { create } from 'zustand';
 import { TrafficFilterState } from '../types';
 
-export const ALL_VEHICLE_CLASSES = ['CAR', 'TRUCK', 'BUS', 'MOTORCYCLE', 'OTHER'] as const;
+export const ALL_VEHICLE_CLASSES = [
+  'Car',
+  'Bus',
+  'Three Wheeler',
+  'Two Wheeler',
+  'HCV',
+  'LCV',
+  'Pedestrian',
+] as const;
 
 export interface FilterStoreState extends TrafficFilterState {
   // Computed helpers

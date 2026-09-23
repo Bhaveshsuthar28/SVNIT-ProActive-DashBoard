@@ -1,16 +1,29 @@
 import { RawTrajectoryRow, TrajectoryPoint } from '../../types';
 
 /**
- * Normalizes vehicle class while preserving unknown classes.
+ * Normalizes vehicle class into one of the 7 official classes:
+ * - Car
+ * - Bus
+ * - Three Wheeler
+ * - Two Wheeler
+ * - HCV
+ * - LCV
+ * - Pedestrian
  */
 export function normalizeVehicleClass(groupedClass: string, sourceClass: string): string {
-  const cls = (groupedClass || sourceClass || 'OTHER').trim().toUpperCase();
-  if (cls === 'CAR' || cls === 'AUTOMOBILE') return 'CAR';
-  if (cls === 'TRUCK' || cls === 'LORRY' || cls === 'LCV' || cls === 'HCV') return 'TRUCK';
-  if (cls === 'BUS') return 'BUS';
-  if (cls === 'MOTORCYCLE' || cls === 'BIKE' || cls === 'TWO-WHEELER' || cls === 'TWO_WHEELER') return 'MOTORCYCLE';
-  if (cls === 'THREE-WHEELER' || cls === 'THREE_WHEELER' || cls === 'AUTO' || cls === 'OTHER' || cls === 'PEDESTRIAN') return 'OTHER';
-  return cls; // Preserve unknown classes without discarding
+  const cls = (groupedClass || sourceClass || '').trim();
+  const upper = cls.toUpperCase().replace(/[-_]/g, ' ');
+
+  if (upper.includes('CAR') || upper === 'AUTOMOBILE') return 'Car';
+  if (upper.includes('BUS')) return 'Bus';
+  if (upper.includes('THREE') || upper.includes('AUTO') || upper === '3 WHEELER' || upper === '3W') return 'Three Wheeler';
+  if (upper.includes('TWO') || upper.includes('MOTORCYCLE') || upper.includes('BIKE') || upper.includes('SCOOTER') || upper === '2 WHEELER' || upper === '2W') return 'Two Wheeler';
+  if (upper === 'HCV' || upper.includes('HEAVY') || upper.includes('TRUCK') || upper.includes('LORRY')) return 'HCV';
+  if (upper === 'LCV' || upper.includes('LIGHT') || upper.includes('VAN')) return 'LCV';
+  if (upper.includes('PEDESTRIAN') || upper.includes('PERSON') || upper.includes('WALK')) return 'Pedestrian';
+
+  // Default fallback if unknown
+  return 'Car';
 }
 
 /**
@@ -94,7 +107,7 @@ export function normalizeTrajectoryRow(row: RawTrajectoryRow): TrajectoryPoint |
     velocityKmh: velocitySmoothedKmh,
     accelerationTangentialMs2: accelTangential,
     accelerationLateralMs2: accelLateral,
-    majorityClass: row.Track_Majority_Class || '',
+    majorityClass: row.Track_Majority_Class ? normalizeVehicleClass(row.Track_Majority_Class, '') : '',
     majorityShare: Number(row.Track_Majority_Share) || 1,
   };
 }

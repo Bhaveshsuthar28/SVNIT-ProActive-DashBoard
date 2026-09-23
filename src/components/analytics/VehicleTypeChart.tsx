@@ -18,11 +18,13 @@ interface VehicleTypeChartProps {
 }
 
 const defaultDistribution: VehicleTypeItem[] = [
-  { name: 'Car', value: 325, percentage: '53%', color: '#1677FF' },
-  { name: 'Motorcycle', value: 200, percentage: '33%', color: '#F79009' },
-  { name: 'Other', value: 63, percentage: '10%', color: '#7A5AF8' },
-  { name: 'Truck', value: 17, percentage: '3%', color: '#FF4D5A' },
-  { name: 'Bus', value: 3, percentage: '1%', color: '#18B979' },
+  { name: 'Car', value: 325, percentage: '45%', color: '#1677FF' },
+  { name: 'Bus', value: 15, percentage: '2%', color: '#18B979' },
+  { name: 'Three Wheeler', value: 80, percentage: '11%', color: '#F79009' },
+  { name: 'Two Wheeler', value: 200, percentage: '28%', color: '#7A5AF8' },
+  { name: 'HCV', value: 25, percentage: '3%', color: '#FF4D5A' },
+  { name: 'LCV', value: 45, percentage: '6%', color: '#06AED4' },
+  { name: 'Pedestrian', value: 35, percentage: '5%', color: '#EC4899' },
 ];
 
 export const VehicleTypeChart: React.FC<VehicleTypeChartProps> = ({

@@ -107,45 +107,52 @@ export class AnalyticsService {
       }
     }
 
-    // Class Distribution
+    // Class Distribution (7 Official Classes)
     const classCountMap: Record<string, number> = {
       Car: 0,
-      Truck: 0,
       Bus: 0,
-      Motorcycle: 0,
-      Other: 0,
+      'Three Wheeler': 0,
+      'Two Wheeler': 0,
+      HCV: 0,
+      LCV: 0,
+      Pedestrian: 0,
     };
 
     for (const vClass of trackMajorityMap.values()) {
-      const upper = vClass.toUpperCase();
-      if (upper === 'CAR' || upper === 'AUTOMOBILE') classCountMap.Car++;
-      else if (upper === 'TRUCK' || upper === 'LCV' || upper === 'HCV' || upper === 'LORRY') classCountMap.Truck++;
-      else if (upper === 'BUS') classCountMap.Bus++;
-      else if (upper === 'MOTORCYCLE' || upper === 'TWO-WHEELER' || upper === 'TWO_WHEELER' || upper === 'BIKE') classCountMap.Motorcycle++;
-      else classCountMap.Other++;
+      const upper = (vClass || '').toUpperCase().replace(/[-_]/g, ' ');
+      if (upper.includes('CAR') || upper === 'AUTOMOBILE') classCountMap.Car++;
+      else if (upper.includes('BUS')) classCountMap.Bus++;
+      else if (upper.includes('THREE') || upper.includes('AUTO') || upper === '3 WHEELER') classCountMap['Three Wheeler']++;
+      else if (upper.includes('TWO') || upper.includes('MOTORCYCLE') || upper.includes('BIKE') || upper.includes('SCOOTER')) classCountMap['Two Wheeler']++;
+      else if (upper === 'HCV' || upper.includes('HEAVY') || upper.includes('TRUCK') || upper.includes('LORRY')) classCountMap.HCV++;
+      else if (upper === 'LCV' || upper.includes('LIGHT') || upper.includes('VAN')) classCountMap.LCV++;
+      else if (upper.includes('PEDESTRIAN') || upper.includes('PERSON') || upper.includes('WALK')) classCountMap.Pedestrian++;
+      else classCountMap.Car++;
     }
 
     const totalTracks = trackMajorityMap.size || 1;
     const classColors: Record<string, string> = {
       Car: '#1677FF',
-      Truck: '#FF4D5A',
       Bus: '#18B979',
-      Motorcycle: '#F79009',
-      Other: '#7A5AF8',
+      'Three Wheeler': '#F79009',
+      'Two Wheeler': '#7A5AF8',
+      HCV: '#FF4D5A',
+      LCV: '#06AED4',
+      Pedestrian: '#EC4899',
     };
 
-    const classDistribution: VehicleClassDistributionItem[] = Object.keys(classCountMap).map(
-      (name) => {
-        const count = classCountMap[name];
-        const pct = Math.round((count / totalTracks) * 100);
-        return {
-          name,
-          count,
-          percentage: `${pct}%`,
-          color: classColors[name],
-        };
-      }
-    );
+    const classDistribution: VehicleClassDistributionItem[] = (
+      ['Car', 'Bus', 'Three Wheeler', 'Two Wheeler', 'HCV', 'LCV', 'Pedestrian'] as const
+    ).map((name) => {
+      const count = classCountMap[name] || 0;
+      const pct = Math.round((count / totalTracks) * 100);
+      return {
+        name,
+        count,
+        percentage: `${pct}%`,
+        color: classColors[name],
+      };
+    });
 
     // Speed Distribution Bins (0-5, 5-10, ... 95-100) per vehicle
     const speedBinsCount = new Array(20).fill(0);
@@ -236,16 +243,18 @@ export class AnalyticsService {
       return { distribution: this.stats?.classDistribution || [], total: this.stats?.totalUniqueVehicles || 0 };
     }
 
-    const allowed = filterCriteria?.vehicleClasses && filterCriteria.vehicleClasses.length < 5
-      ? new Set(filterCriteria.vehicleClasses.map((c) => c.toUpperCase()))
+    const allowed = filterCriteria?.vehicleClasses && filterCriteria.vehicleClasses.length < 7
+      ? new Set(filterCriteria.vehicleClasses.map((c) => c.toUpperCase().replace(/[-_]/g, ' ')))
       : null;
 
     const classCounts: Record<string, number> = {
       Car: 0,
-      Truck: 0,
       Bus: 0,
-      Motorcycle: 0,
-      Other: 0,
+      'Three Wheeler': 0,
+      'Two Wheeler': 0,
+      HCV: 0,
+      LCV: 0,
+      Pedestrian: 0,
     };
     let total = 0;
 
@@ -253,19 +262,25 @@ export class AnalyticsService {
       if (firstSeen <= currentTime) {
         const cls = this.trackClasses.get(trackId);
         if (!cls) continue;
-        const upper = cls.toUpperCase();
-        if (allowed && !allowed.has(upper)) continue;
+        const upper = cls.toUpperCase().replace(/[-_]/g, ' ');
+        if (allowed && !allowed.has(upper) && !allowed.has(cls.toUpperCase())) continue;
 
-        if (upper === 'CAR' || upper === 'AUTOMOBILE') {
+        if (upper.includes('CAR') || upper === 'AUTOMOBILE') {
           classCounts.Car++;
-        } else if (upper === 'TRUCK') {
-          classCounts.Truck++;
-        } else if (upper === 'BUS') {
+        } else if (upper.includes('BUS')) {
           classCounts.Bus++;
-        } else if (upper === 'MOTORCYCLE' || upper === 'BIKE') {
-          classCounts.Motorcycle++;
+        } else if (upper.includes('THREE') || upper.includes('AUTO') || upper === '3 WHEELER') {
+          classCounts['Three Wheeler']++;
+        } else if (upper.includes('TWO') || upper.includes('MOTORCYCLE') || upper.includes('BIKE') || upper.includes('SCOOTER')) {
+          classCounts['Two Wheeler']++;
+        } else if (upper === 'HCV' || upper.includes('HEAVY') || upper.includes('TRUCK') || upper.includes('LORRY')) {
+          classCounts.HCV++;
+        } else if (upper === 'LCV' || upper.includes('LIGHT') || upper.includes('VAN')) {
+          classCounts.LCV++;
+        } else if (upper.includes('PEDESTRIAN') || upper.includes('PERSON') || upper.includes('WALK')) {
+          classCounts.Pedestrian++;
         } else {
-          classCounts.Other++;
+          classCounts.Car++;
         }
         total++;
       }
@@ -273,13 +288,17 @@ export class AnalyticsService {
 
     const classColors: Record<string, string> = {
       Car: '#1677FF',
-      Motorcycle: '#F79009',
-      Other: '#7A5AF8',
-      Truck: '#FF4D5A',
       Bus: '#18B979',
+      'Three Wheeler': '#F79009',
+      'Two Wheeler': '#7A5AF8',
+      HCV: '#FF4D5A',
+      LCV: '#06AED4',
+      Pedestrian: '#EC4899',
     };
 
-    const distribution: VehicleClassDistributionItem[] = (['Car', 'Motorcycle', 'Other', 'Truck', 'Bus'] as const).map((key) => {
+    const distribution: VehicleClassDistributionItem[] = (
+      ['Car', 'Bus', 'Three Wheeler', 'Two Wheeler', 'HCV', 'LCV', 'Pedestrian'] as const
+    ).map((key) => {
       const count = classCounts[key] || 0;
       const pct = total > 0 ? `${Math.round((count / total) * 100)}%` : '0%';
       return {

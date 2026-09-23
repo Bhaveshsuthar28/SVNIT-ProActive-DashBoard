@@ -54,13 +54,15 @@ export const colors = {
     text: "#0E8794",
   },
 
-  // Semantic vehicle class mapping
+  // Semantic vehicle class mapping (7 official classes)
   vehicles: {
     CAR: "#1677FF",
-    TRUCK: "#FF4D5A",
     BUS: "#18B979",
-    MOTORCYCLE: "#F79009",
-    OTHER: "#7A5AF8",
+    THREE_WHEELER: "#F79009",
+    TWO_WHEELER: "#7A5AF8",
+    HCV: "#FF4D5A",
+    LCV: "#06AED4",
+    PEDESTRIAN: "#EC4899",
   }
 } as const;
 

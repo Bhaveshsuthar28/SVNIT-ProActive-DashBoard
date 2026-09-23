@@ -55,26 +55,47 @@ const CLASS_BADGE_STYLES: Record<string, { bg: string; text: string; dot: string
     text: 'text-blue-900 dark:text-blue-200 font-bold',
     dot: 'bg-[#1677FF]',
   },
-  TRUCK: {
-    bg: 'bg-rose-50 dark:bg-rose-950/70 border-rose-300 dark:border-rose-700',
-    text: 'text-rose-900 dark:text-rose-200 font-bold',
-    dot: 'bg-[#FF4D5A]',
-  },
   BUS: {
     bg: 'bg-emerald-50 dark:bg-emerald-950/70 border-emerald-300 dark:border-emerald-700',
     text: 'text-emerald-900 dark:text-emerald-200 font-bold',
     dot: 'bg-[#18B979]',
   },
-  MOTORCYCLE: {
+  THREE_WHEELER: {
     bg: 'bg-amber-50 dark:bg-amber-950/70 border-amber-300 dark:border-amber-700',
     text: 'text-amber-900 dark:text-amber-200 font-bold',
     dot: 'bg-[#F79009]',
   },
-  OTHER: {
+  TWO_WHEELER: {
     bg: 'bg-purple-50 dark:bg-purple-950/70 border-purple-300 dark:border-purple-700',
     text: 'text-purple-900 dark:text-purple-200 font-bold',
     dot: 'bg-[#7A5AF8]',
   },
+  HCV: {
+    bg: 'bg-rose-50 dark:bg-rose-950/70 border-rose-300 dark:border-rose-700',
+    text: 'text-rose-900 dark:text-rose-200 font-bold',
+    dot: 'bg-[#FF4D5A]',
+  },
+  LCV: {
+    bg: 'bg-cyan-50 dark:bg-cyan-950/70 border-cyan-300 dark:border-cyan-700',
+    text: 'text-cyan-900 dark:text-cyan-200 font-bold',
+    dot: 'bg-[#06AED4]',
+  },
+  PEDESTRIAN: {
+    bg: 'bg-pink-50 dark:bg-pink-950/70 border-pink-300 dark:border-pink-700',
+    text: 'text-pink-900 dark:text-pink-200 font-bold',
+    dot: 'bg-[#EC4899]',
+  },
+};
+
+export const getVehicleBadgeStyle = (cls: string) => {
+  const norm = (cls || '').toUpperCase().replace(/[\s\-_]/g, '');
+  if (norm.includes('THREE')) return CLASS_BADGE_STYLES.THREE_WHEELER;
+  if (norm.includes('TWO') || norm.includes('BIKE') || norm.includes('MOTORCYCLE')) return CLASS_BADGE_STYLES.TWO_WHEELER;
+  if (norm.includes('HCV') || norm.includes('TRUCK')) return CLASS_BADGE_STYLES.HCV;
+  if (norm.includes('LCV') || norm.includes('VAN')) return CLASS_BADGE_STYLES.LCV;
+  if (norm.includes('PEDESTRIAN') || norm.includes('PERSON')) return CLASS_BADGE_STYLES.PEDESTRIAN;
+  if (norm.includes('BUS')) return CLASS_BADGE_STYLES.BUS;
+  return CLASS_BADGE_STYLES.CAR;
 };
 
 export const TrafficDataExplorer: React.FC = () => {
@@ -244,8 +265,12 @@ export const TrafficDataExplorer: React.FC = () => {
       }
 
       // 3. Vehicle class filter
-      if (selectedClass !== 'ALL' && p.vehicleClass.toUpperCase() !== selectedClass) {
-        return false;
+      if (selectedClass !== 'ALL') {
+        const cleanP = p.vehicleClass.toLowerCase().replace(/[\s\-_]/g, '');
+        const cleanSel = selectedClass.toLowerCase().replace(/[\s\-_]/g, '');
+        if (cleanP !== cleanSel) {
+          return false;
+        }
       }
 
       // 4. Track ID filter
@@ -667,7 +692,7 @@ export const TrafficDataExplorer: React.FC = () => {
 
           {/* Vehicle Class Rectangular Filter Buttons */}
           <div className="flex flex-wrap items-center gap-2">
-            {['ALL', 'CAR', 'TRUCK', 'BUS', 'MOTORCYCLE', 'OTHER'].map((cls) => {
+            {['ALL', 'Car', 'Bus', 'Three Wheeler', 'Two Wheeler', 'HCV', 'LCV', 'Pedestrian'].map((cls) => {
               const isSelected = selectedClass === cls;
               return (
                 <button
@@ -683,7 +708,7 @@ export const TrafficDataExplorer: React.FC = () => {
                       : 'bg-white dark:bg-[#0B111E] text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-600 hover:border-slate-400 dark:hover:border-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'
                   }`}
                 >
-                  {cls === 'ALL' ? 'All Classes' : cls.charAt(0) + cls.slice(1).toLowerCase()}
+                  {cls === 'ALL' ? 'All Classes' : cls}
                 </button>
               );
             })}
@@ -1065,8 +1090,7 @@ export const TrafficDataExplorer: React.FC = () => {
                 paginatedPoints.map((point) => {
                   const rowKey = `${point.trackId}_${point.frame}`;
                   const isSelected = selectedRowKey === rowKey;
-                  const upperClass = point.vehicleClass.toUpperCase();
-                  const badge = CLASS_BADGE_STYLES[upperClass] || CLASS_BADGE_STYLES.OTHER;
+                  const badge = getVehicleBadgeStyle(point.vehicleClass);
 
                   return (
                     <tr

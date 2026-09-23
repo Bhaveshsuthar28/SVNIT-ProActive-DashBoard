@@ -1,5 +1,13 @@
-// Vehicle types matching reference image
-export type VehicleClass = 'CAR' | 'TRUCK' | 'BUS' | 'MOTORCYCLE' | 'OTHER' | string;
+// 7 official vehicle classes
+export type VehicleClass =
+  | 'Car'
+  | 'Bus'
+  | 'Three Wheeler'
+  | 'Two Wheeler'
+  | 'HCV'
+  | 'LCV'
+  | 'Pedestrian'
+  | string;
 
 export interface RawTrajectoryRow {
   frame: number;

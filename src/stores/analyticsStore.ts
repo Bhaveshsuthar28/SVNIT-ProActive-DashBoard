@@ -72,10 +72,12 @@ const defaultSparklines = {
 const defaultDistribution: { distribution: VehicleClassDistributionItem[]; total: number } = {
   distribution: [
     { name: 'Car', count: 0, percentage: '0%', color: '#1677FF' },
-    { name: 'Motorcycle', count: 0, percentage: '0%', color: '#F79009' },
-    { name: 'Other', count: 0, percentage: '0%', color: '#7A5AF8' },
-    { name: 'Truck', count: 0, percentage: '0%', color: '#FF4D5A' },
     { name: 'Bus', count: 0, percentage: '0%', color: '#18B979' },
+    { name: 'Three Wheeler', count: 0, percentage: '0%', color: '#F79009' },
+    { name: 'Two Wheeler', count: 0, percentage: '0%', color: '#7A5AF8' },
+    { name: 'HCV', count: 0, percentage: '0%', color: '#FF4D5A' },
+    { name: 'LCV', count: 0, percentage: '0%', color: '#06AED4' },
+    { name: 'Pedestrian', count: 0, percentage: '0%', color: '#EC4899' },
   ],
   total: 0,
 };

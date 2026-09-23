@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useFilterStore, ALL_VEHICLE_CLASSES } from '../../stores/filterStore';
 import { useAnalyticsStore } from '../../stores/analyticsStore';
 import { trajectoryService } from '../../services/trajectory/trajectoryService';
@@ -20,13 +20,23 @@ export const FilterBar: React.FC = () => {
   const [searchInput, setSearchInput] = useState('');
   const [searchError, setSearchError] = useState(false);
 
-  const vehicleClassMeta = [
-    { id: 'CAR', label: 'Cars', color: '#1677FF', count: 325 },
-    { id: 'MOTORCYCLE', label: 'Motorcycles', color: '#F79009', count: 200 },
-    { id: 'TRUCK', label: 'Trucks', color: '#FF4D5A', count: 17 },
-    { id: 'BUS', label: 'Buses', color: '#18B979', count: 3 },
-    { id: 'OTHER', label: 'Other', color: '#7A5AF8', count: 63 },
-  ];
+  const vehicleClassMeta = useMemo(() => {
+    const counts: Record<string, number> = {};
+    if (stats?.classDistribution) {
+      stats.classDistribution.forEach((d) => {
+        counts[d.name] = d.count;
+      });
+    }
+    return [
+      { id: 'Car', label: 'Cars', color: '#1677FF', count: counts['Car'] ?? 0 },
+      { id: 'Bus', label: 'Buses', color: '#18B979', count: counts['Bus'] ?? 0 },
+      { id: 'Three Wheeler', label: 'Three Wheelers', color: '#F79009', count: counts['Three Wheeler'] ?? 0 },
+      { id: 'Two Wheeler', label: 'Two Wheelers', color: '#7A5AF8', count: counts['Two Wheeler'] ?? 0 },
+      { id: 'HCV', label: 'HCV', color: '#FF4D5A', count: counts['HCV'] ?? 0 },
+      { id: 'LCV', label: 'LCV', color: '#06AED4', count: counts['LCV'] ?? 0 },
+      { id: 'Pedestrian', label: 'Pedestrians', color: '#EC4899', count: counts['Pedestrian'] ?? 0 },
+    ];
+  }, [stats]);
 
   const speedPresets = [
     { label: 'All Speeds', min: null, max: null },
