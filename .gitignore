@@ -1,0 +1,43 @@
+# Dependencies
+node_modules
+
+# Build output
+dist
+dist-ssr
+
+# Environment & secrets
+.env
+.env.*
+*.local
+
+# Confidential data files
+*.csv
+public/*.csv
+public/data/*.csv
+public
+scripts/*.py
+
+# Video files (large & confidential)
+*.mp4
+*.avi
+*.mov
+*.mkv
+public/*.mp4
+
+# Logo / branding assets (confidential)
+public/icon.png
+
+# Editor & OS files
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
