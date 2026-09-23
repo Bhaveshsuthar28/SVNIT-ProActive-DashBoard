@@ -1,0 +1,2 @@
+# Place client-provided traffic-heatmap.png in this directory.
+# Default path referenced by TrafficHeatmap component: /data/traffic-heatmap.png

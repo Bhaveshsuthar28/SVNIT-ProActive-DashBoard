@@ -17,7 +17,7 @@ export default defineConfig({
             rawUrl === '/video/traffic.mp4' ||
             rawUrl === '/video/NFD_Junction_annotated_5min.mp4'
           ) {
-            const videoPath = path.resolve(__dirname, 'NFD_Junction_annotated_5min.mp4');
+            const videoPath = path.resolve(__dirname, 'public', 'NFD_Junction_annotated_5min.mp4');
             if (!fs.existsSync(videoPath)) {
               res.statusCode = 404;
               res.end('Video file not found');
@@ -59,7 +59,7 @@ export default defineConfig({
             rawUrl === '/trajectories.csv' ||
             rawUrl === '/Smoothed_trajectories_5min.csv'
           ) {
-            const csvPath = path.resolve(__dirname, 'Smoothed_trajectories_5min.csv');
+            const csvPath = path.resolve(__dirname, 'public', 'Smoothed_trajectories_5min.csv');
             if (!fs.existsSync(csvPath)) {
               res.statusCode = 404;
               res.end('Trajectory CSV file not found');

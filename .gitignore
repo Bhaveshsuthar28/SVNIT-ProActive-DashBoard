@@ -1,20 +1,25 @@
 # Dependencies
 node_modules
+frontend/node_modules
 
 # Build output
 dist
+frontend/dist
 dist-ssr
 
 # Environment & secrets
 .env
 .env.*
+frontend/.env
+frontend/.env.*
 *.local
 
 # Confidential data files
 *.csv
-public/*.csv
-public/data/*.csv
-public
+frontend/public/*.csv
+frontend/public/data/*.csv
+frontend/public/*.jpg
+frontend/public/*.jpeg
 scripts/*.py
 
 # Video files (large & confidential)
@@ -22,10 +27,10 @@ scripts/*.py
 *.avi
 *.mov
 *.mkv
-public/*.mp4
+frontend/public/*.mp4
 
 # Logo / branding assets (confidential)
-public/icon.png
+frontend/public/icon.png
 
 # Editor & OS files
 .vscode
