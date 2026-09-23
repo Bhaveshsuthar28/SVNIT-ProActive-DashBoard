@@ -1,9 +1,10 @@
 # PROACTIVE DASHBOARD — SETUP & DEPLOYMENT GUIDE
 
 > **Important Architecture Notice**:  
-> ProActive Dashboard is a high-performance, client-side analytical platform powered by **Vite**, **React**, and **TypeScript**.  
-> **NO Docker, NO Nginx, and NO external database servers (PostgreSQL/PostGIS) are required.**  
-> The dashboard operates directly on local Node.js runtime with built-in HTTP 206 video streaming middleware and in-browser trajectory processing.
+> ProActive Dashboard is a lightweight, high-performance analytical platform powered by **Vite**, **React**, and **TypeScript**.  
+> - **NO Docker, NO Nginx, and NO external database servers (PostgreSQL/PostGIS) are required.**  
+> - **NO live interactive map services (no Leaflet, Mapbox, or external OSM tile servers) are used.**  
+> - The dashboard features a **static spatial conflict heatmap image** (`Conflict_Heatmaps.jpg.jpeg`) displayed alongside the video player, and local in-browser trajectory processing.
 
 ---
 
@@ -33,7 +34,7 @@ cd SVNIT-ProActive-DashBoard
 
 ## 3. Install Project Dependencies
 
-Install all required frontend and analytical packages using npm:
+Install all required packages using npm:
 
 ```bash
 npm install
@@ -43,55 +44,37 @@ npm install
 
 ## 4. Setup External Assets (Not Tracked on GitHub)
 
-Due to file size limits and confidentiality, large multimedia and proprietary trajectory datasets are excluded from GitHub via `.gitignore`. You must obtain the shared data package from the project team and place the files into their respective directories with the **exact file names** listed below.
+Due to file size limits and confidentiality, large video files and proprietary trajectory datasets are excluded from GitHub via `.gitignore`. You must obtain the shared data package from the project team and place the files into their respective directories with the **exact file names** listed below.
 
 ### 4.1 Asset Placement Table
 
 | # | Asset Description | Exact Required File Name | Target Destination Folder | Purpose / Function |
 | :-: | :--- | :--- | :--- | :--- |
-| **1** | **Annotated Video** | `NFD_Junction_annotated_5min.mp4` | `./` *(Project Root)* **AND** `./public/` | Video player playback & canvas frame extraction |
-| **2** | **Trajectory Dataset** | `Smoothed_trajectories_5min.csv` | `./` *(Project Root)* | High-speed CSV streaming middleware |
+| **1** | **Annotated Video** | `NFD_Junction_annotated_5min.mp4` | `./` *(Project Root)* **AND** `./public/` | Video player playback & frame inspector snapshots |
+| **2** | **Trajectory Dataset (Root)** | `Smoothed_trajectories_5min.csv` | `./` *(Project Root)* | High-speed CSV streaming middleware |
 | **3** | **Trajectory Dataset (Public)** | `trajectories.csv` | `./public/` **AND** `./public/data/` | In-browser trajectory parser & analytics engine |
-| **4** | **Accident Conflict Heatmap** | `Conflict_Heatmaps.jpg.jpeg` | `./public/` | Spatial conflict reference image on Dashboard |
+| **4** | **Static Conflict Heatmap** | `Conflict_Heatmaps.jpg.jpeg` | `./public/` | Spatial conflict reference image displayed on Dashboard |
 | **5** | **Dashboard Favicon / Icon** | `icon.png` | `./public/` | Browser tab favicon & brand identity |
-| **6** | **Environment Variables** | `.env` | `./` *(Project Root)* | Map tile providers and runtime configuration |
 
 ---
 
-### 4.2 Step-by-Step Asset Setup
+### 4.2 Step-by-Step Asset Placement
 
-#### Step A: Configure Environment Variables
-Copy the provided `.env.example` template into a new `.env` file in the root directory:
-```bash
-# On Windows (PowerShell):
-Copy-Item .env.example .env
-
-# On macOS / Linux:
-cp .env.example .env
-```
-Ensure the contents of `.env` match:
-```env
-# Standard OSM Tile Provider
-VITE_OSM_TILES_URL=https://tile.openstreetmap.org/{z}/{x}/{y}.png
-
-# Satellite Provider (Esri World Imagery)
-VITE_SATELLITE_TILES_URL=https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}
-```
-
-#### Step B: Place Video File
+#### Step A: Place Video File
 Paste `NFD_Junction_annotated_5min.mp4` directly into:
 1. The **project root directory**: `./NFD_Junction_annotated_5min.mp4`
 2. The **public directory**: `./public/NFD_Junction_annotated_5min.mp4`
 
-#### Step C: Place Trajectory CSV Files
+#### Step B: Place Trajectory CSV Files
 1. Paste `Smoothed_trajectories_5min.csv` directly into the **project root directory**: `./Smoothed_trajectories_5min.csv`
 2. Copy or rename a copy to `trajectories.csv` and place it into both:
    - `./public/trajectories.csv`
    - `./public/data/trajectories.csv`
 
-#### Step D: Place Heatmap & Icon
-1. Paste `Conflict_Heatmaps.jpg.jpeg` into `./public/Conflict_Heatmaps.jpg.jpeg`
-2. Paste `icon.png` into `./public/icon.png`
+#### Step C: Place Static Conflict Heatmap Image & Icon
+*(Note: There is no live tile map service; the dashboard displays this static spatial conflict heatmap image directly.)*
+1. Paste `Conflict_Heatmaps.jpg.jpeg` into: `./public/Conflict_Heatmaps.jpg.jpeg`
+2. Paste `icon.png` into: `./public/icon.png`
 
 ---
 
@@ -101,8 +84,6 @@ Verify that your project structure matches the layout below before launching:
 
 ```text
 SVNIT-ProActive-DashBoard/
-├── .env                               <-- Environment configuration (created from .env.example)
-├── .env.example
 ├── .gitignore
 ├── index.html
 ├── package.json
@@ -113,7 +94,7 @@ SVNIT-ProActive-DashBoard/
 ├── Smoothed_trajectories_5min.csv     <-- [EXTERNAL] Trajectory dataset in root
 │
 ├── public/
-│   ├── Conflict_Heatmaps.jpg.jpeg     <-- [EXTERNAL] Heatmap spatial reference
+│   ├── Conflict_Heatmaps.jpg.jpeg     <-- [EXTERNAL] Static conflict heatmap image
 │   ├── icon.png                       <-- [EXTERNAL] Favicon & branding
 │   ├── NFD_Junction_annotated_5min.mp4<-- [EXTERNAL] Public fallback video
 │   ├── Smoothed_trajectories_5min.csv <-- [EXTERNAL] Public fallback CSV
@@ -174,12 +155,12 @@ If a new video or updated trajectory CSV is provided:
 2. **For new trajectory CSV**: Replace `Smoothed_trajectories_5min.csv` in root and `public/data/trajectories.csv` with the updated CSV using the exact same filename.
 3. Refresh your browser; Vite will stream and parse the updated dataset automatically.
 
-### 7.3 Switching Port or Network Host
-To expose the dashboard across your local network (e.g. for presentations or multi-device testing):
+### 7.3 Exposing Over Local Network (Presentations)
+To expose the dashboard across your local Wi-Fi/LAN (e.g. for presentations or multi-device testing):
 ```bash
 npm run dev -- --host
 ```
-The terminal will display your Network IP address (e.g., `http://192.168.1.X:5173/`) accessible from other devices on the same Wi-Fi/LAN.
+The terminal will display your Network IP address (e.g., `http://192.168.1.X:5173/`) accessible from other devices on the same local network.
 
 ---
 
